@@ -9,3 +9,6 @@ html, body {
 ::-webkit-scrollbar {
     display: none;
 }
+#id1 {
+    background-color: #2c7bb5;
+}

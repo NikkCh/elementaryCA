@@ -1,4 +1,4 @@
-// todo add eca.js/nextHood to curtain
+// problem last pixel line is white
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 const height = window.innerHeight;
@@ -6,7 +6,7 @@ const width = window.innerWidth;
 const tWidth = width*4;
 ctx.canvas.height = window.innerHeight;
 ctx.canvas.width = window.innerWidth;
-
+const stop = document.getElementById('stop');
 let canvasX = 0;
 let canvasY = 0;
 let a = 0;
@@ -47,23 +47,33 @@ function curtain(){
     }
     console.log(cells, (a/tWidth)+"/"+(pxlLength/tWidth));
 
+    if(a<pxlLength){
 
-    let i = 0;
-    for(b=a; b<a+tWidth;b+=4) {
-        if(buffer[i] === 1){
+        let i = 0;
+        for(b=a; b<a+tWidth;b+=4) {
+            if(buffer[i] === 1){
+                imageData.data[b + 1] =   0;  //
+                imageData.data[b    ] =   0;  // black   cell
+                imageData.data[b + 2] =   0;  //
+                imageData.data[b + 3] = 255;
+            }
+            i++;
+        }
+    }else if(a>pxlLength){
+        imageData.data.copyWithin(0, tWidth, pxlLength-1);
+        let i = 0;
+        for(b=pxlLength-(tWidth-1);b<pxlLength;b+=4){
             imageData.data[b + 1] =   0;  //
             imageData.data[b    ] =   0;  // black   cell
             imageData.data[b + 2] =   0;  //
             imageData.data[b + 3] = 255;
         }
-        i++;
     }
     cells = [];
     cells.push.apply(cells, buffer);
     a+=width*4;
-    if(a==pxlLength){
-        console.log(imageData.data);
-        clearInterval(interval);
-    }
     ctx.putImageData(imageData, canvasX, canvasY);
+    stop.addEventListener('click',() => {
+        clearInterval(interval);
+    });
 }
