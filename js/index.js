@@ -3,6 +3,7 @@ const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 const height = window.innerHeight;
 const width = window.innerWidth;
+const tWidth = width*4;
 ctx.canvas.height = window.innerHeight;
 ctx.canvas.width = window.innerWidth;
 
@@ -26,6 +27,7 @@ cells[Math.round(cells.length/2)] = 1;
 // Loop
 let interval = setInterval(curtain, 10);
 let imageData = ctx.createImageData(width, height);
+const pxlLength = imageData.data.length;
 function curtain(){
 
     for (j=0; j<cells.length;j++){
@@ -43,20 +45,15 @@ function curtain(){
         buffer[j] = nextState[currentState.indexOf(hood)];
 
     }
-    console.log(cells, (a/(width*4))+"/"+(imageData.data.length/(width*4)));
+    console.log(cells, (a/tWidth)+"/"+(pxlLength/tWidth));
 
-    // canvas
+
     let i = 0;
-    for(b=a; b<a+(width*4);b+=4) {
+    for(b=a; b<a+tWidth;b+=4) {
         if(buffer[i] === 1){
             imageData.data[b + 1] =   0;  //
             imageData.data[b    ] =   0;  // black   cell
             imageData.data[b + 2] =   0;  //
-            imageData.data[b + 3] = 255;
-        }else if(buffer[i] === 0){
-            imageData.data[b + 1] = 255;  //
-            imageData.data[b    ] = 255;  // white   cell
-            imageData.data[b + 2] = 255;  //
             imageData.data[b + 3] = 255;
         }
         i++;
@@ -64,7 +61,7 @@ function curtain(){
     cells = [];
     cells.push.apply(cells, buffer);
     a+=width*4;
-    if(a==imageData.data.length){
+    if(a==pxlLength){
         console.log(imageData.data);
         clearInterval(interval);
     }
