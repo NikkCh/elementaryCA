@@ -19,9 +19,12 @@ canvas{
 }
 div.header {
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   text-align: center;
+}
+.pure-u-1-4 {
+  height: 100%;
 }
 #link{
   opacity: 0.6;
