@@ -1,10 +1,11 @@
 // problem last pixel line is white
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
-const height = window.innerHeight;
+const height = document.getElementById('body').clientHeight;
+console.log(height);
 const width = window.innerWidth;
 const tWidth = width*4;
-ctx.canvas.height = window.innerHeight;
+ctx.canvas.height = document.getElementById('body').clientHeight;
 ctx.canvas.width = window.innerWidth;
 const stop = document.getElementById('stop');
 let canvasX = 0;
@@ -26,7 +27,7 @@ cells[Math.round(cells.length/2)] = 1;
 
 // Loop
 let interval = setInterval(curtain, 10);
-let imageData = ctx.createImageData(width, height);
+let imageData = ctx.createImageData(width,height);
 const pxlLength = imageData.data.length;
 function curtain(){
 
@@ -45,8 +46,8 @@ function curtain(){
         buffer[j] = nextState[currentState.indexOf(hood)];
 
     }
-    console.log(cells, (a/tWidth)+"/"+(pxlLength/tWidth));
-
+    // console.log(cells, (a/tWidth)+"/"+(pxlLength/tWidth));
+    // console.log(buffer);
     if(a<pxlLength){
 
         let i = 0;
@@ -59,16 +60,21 @@ function curtain(){
             }
             i++;
         }
-    }else if(a>pxlLength){
-        imageData.data.copyWithin(0, tWidth, pxlLength-1);
-        let i = 0;
-        for(b=pxlLength-(tWidth-1);b<pxlLength;b+=4){
-            imageData.data[b + 1] =   0;  //
-            imageData.data[b    ] =   0;  // black   cell
-            imageData.data[b + 2] =   0;  //
-            imageData.data[b + 3] = 255;
-        }
+    }else if(a=>pxlLength){
+        clearInterval(interval);
+        // imageData.data.copyWithin(0, tWidth, pxlLength-1);
+        // let i = 0;
+        // for(b=pxlLength-tWidth;b<pxlLength;b+=4){
+        //     if(buffer[i] === 1){
+        //         imageData.data[b + 1] =   0;  //
+        //         imageData.data[b    ] =   0;  // black   cell
+        //         imageData.data[b + 2] =   0;  //
+        //         imageData.data[b + 3] = 255;
+        //     }
+        //     i++;
+        // }
     }
+
     cells = [];
     cells.push.apply(cells, buffer);
     a+=width*4;
