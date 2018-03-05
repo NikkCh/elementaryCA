@@ -1,20 +1,48 @@
-// problem last pixel line is white
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 const height = document.getElementById('body').clientHeight;
-console.log(height);
 const width = window.innerWidth;
 const tWidth = width*4;
 ctx.canvas.height = document.getElementById('body').clientHeight;
 ctx.canvas.width = window.innerWidth;
 const stop = document.getElementById('stop');
+const clear = document.getElementById('clear');
+var selRule = document.getElementById('selectRule');
+var centerInit = document.getElementById('sngl');
+var rndInit = document.getElementById('rnd');
 let canvasX = 0;
 let canvasY = 0;
 let a = 0;
+var falling = true;
 
+function populateRules(){
+    for(i=0; i<256; i++){
+        var e = document.createElement('option');
+        e.innerHTML = i;
+        e.setAttribute("value", i);
+        if(i == 110){
+            e.setAttribute("selected","");
+        }
+        selRule.appendChild(e);
+    }
+}
+populateRules();
+var nextState = selectRule();
+function selectRule(){
+    var val = selRule.value;
+    var nm = ("000000000" + Number(val).toString(2)).substr(-8);
+    var stateArray =(""+nm).split("");
+    for(i=0; i < stateArray.length; i++){
+        stateArray[i] = parseInt(stateArray[i]);
+    }
+    return stateArray;
+}
+selRule.addEventListener('click', function(){
+    nextState = selectRule();
+});
 // ECA
 let currentState = ["111",  "110",  "101",  "100",  "011", "010", "001", "000"];
-let nextState = [0, 1, 1 , 0, 1, 1, 1, 0];
+
 let cells = new Array(width);
 let buffer = new Array(width);
 
@@ -22,15 +50,46 @@ let buffer = new Array(width);
 for(let h = 0; h < cells.length; h++){
     cells[h] = 0;
 }
-// ceed
-cells[Math.round(cells.length/2)] = 1;
+// initial state
+// cells[Math.round(cells.length/2)] = 1;
+for(i=0; i < cells.length;i++){
+    rn = Math.random();
+    if (rn > 0.5){
+        rn = 1;
+    }else{
+        rn = 0;
+    }
+    cells[i] = rn;
 
-// Loop
-let interval = setInterval(curtain, 10);
+}
+rndInit.addEventListener('click', function(){
+    rndInit.setAttribute('class', 'pure-button pure-button-active');
+    centerInit.setAttribute('class', 'pure-button');
+    for(i=0; i < cells.length;i++){
+        rn = Math.random();
+        if (rn > 0.5){
+            rn = 1;
+        }else{
+            rn = 0;
+        }
+        cells[i] = rn;
+        // cells[Math.floor(Math.random() * Math.floor(cells.length))] = 1;
+    }
+});
+centerInit.addEventListener('click', function(){
+    centerInit.setAttribute('class', 'pure-button pure-button-active');
+    rndInit.setAttribute('class', 'pure-button');
+    for(let h = 0; h < cells.length; h++){
+        cells[h] = 0;
+    }
+    // cells[Math.floor(Math.random() * Math.floor(cells.length))] = 1;
+    cells[Math.round(cells.length/2)] = 1;
+});
+// pixel writting loop
+var interval = setInterval(curtain, 10);
 let imageData = ctx.createImageData(width,height);
-const pxlLength = imageData.data.length;
+var pxlLength = imageData.data.length;
 function curtain(){
-
     for (j=0; j<cells.length;j++){
         pre = cells[j-1];
         main = cells[j];
@@ -46,8 +105,6 @@ function curtain(){
         buffer[j] = nextState[currentState.indexOf(hood)];
 
     }
-    // console.log(cells, (a/tWidth)+"/"+(pxlLength/tWidth));
-    // console.log(buffer);
     if(a<pxlLength){
 
         let i = 0;
@@ -79,7 +136,33 @@ function curtain(){
     cells.push.apply(cells, buffer);
     a+=width*4;
     ctx.putImageData(imageData, canvasX, canvasY);
-    stop.addEventListener('click',() => {
-        clearInterval(interval);
-    });
+
 }
+stop.addEventListener('click',() => {
+    if (falling){
+        stop.innerHTML = "&#9654;";
+        console.log('stop');
+        clearInterval(interval);
+        falling = false;
+    }else{
+        stop.innerHTML = "&#9612;&#9612;";
+        console.log('start');
+        interval = setInterval(curtain, 10);
+        falling = true;
+    }
+});
+clear.addEventListener('click',() => {
+    stop.innerHTML = "&#9654;";
+    console.log('stop');
+    clearInterval(interval);
+    falling = false;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    a = 0;
+    for(i = 0; i < imageData.data.length; i++){
+        imageData.data[i] = 255;
+    }
+    for(i=0; i < cells.length;i++){
+        cells[i] = 0;
+        cells[Math.floor(Math.random() * Math.floor(cells.length))] = 1;
+    }
+});
