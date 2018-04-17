@@ -1,0 +1,7 @@
+* elementaryCA
+
+this is a elementary cellular automata viewer written in javascript.
+
+try it out: https://loopynid.github.io/elementaryCA/
+
+<|~_=|>
